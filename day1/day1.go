@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"go.uber.org/zap"
-	"golang.org/x/exp/constraints"
 )
 
 //go:embed part1.txt
@@ -29,14 +28,12 @@ func PartOne(logger *zap.SugaredLogger) {
 		return
 	}
 
-	mostCalories := 0
+	mostCalories := NewTopList[int](1)
 	curElfCalories := 0
 
 	for _, food := range allFoods {
 		if food == "" {
-			if curElfCalories > mostCalories {
-				mostCalories = curElfCalories
-			}
+			mostCalories.Push(curElfCalories)
 			curElfCalories = 0
 			continue
 		}
@@ -49,46 +46,7 @@ func PartOne(logger *zap.SugaredLogger) {
 		curElfCalories += calories
 	}
 
-	logger.Info(mostCalories)
-}
-
-type TopList[T constraints.Ordered] struct {
-	Size int
-	data []T
-}
-
-func NewTopList[T constraints.Ordered](size int) *TopList[T] {
-	if size < 1 {
-		return &TopList[T]{Size: 1, data: make([]T, 1)}
-	}
-	return &TopList[T]{Size: size, data: make([]T, size)}
-}
-
-// Add will add `val` to the list if it's greater than at least 1 number in the list in order, and returns true.
-// Otherwise it does nothing and returns false
-func (t *TopList[T]) Add(val T) bool {
-	if val <= t.data[t.Size-1] {
-		return false
-	}
-
-	t.data[t.Size-1] = val
-
-	for i := t.Size - 2; i >= 0; i-- {
-		if t.data[i] >= t.data[i+1] {
-			break
-		}
-		t.data[i], t.data[i+1] = t.data[i+1], t.data[i]
-	}
-
-	return true
-}
-
-// Sum will return the sum of all values in the list
-func (t *TopList[T]) Sum() (total T) {
-	for _, item := range t.data {
-		total += item
-	}
-	return
+	logger.Info(mostCalories.Sum())
 }
 
 func PartTwo(logger *zap.SugaredLogger) {
@@ -103,7 +61,7 @@ func PartTwo(logger *zap.SugaredLogger) {
 
 	for _, food := range allFoods {
 		if food == "" {
-			mostCalories.Add(curElfCalories)
+			mostCalories.Push(curElfCalories)
 			curElfCalories = 0
 			continue
 		}
