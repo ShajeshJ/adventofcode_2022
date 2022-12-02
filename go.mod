@@ -1,4 +1,4 @@
-module ShajeshJ/adventofcode_2022
+module github.com/ShajeshJ/adventofcode_2022
 
 go 1.19
 

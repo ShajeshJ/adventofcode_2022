@@ -1,9 +1,9 @@
 package main
 
 import (
-	"ShajeshJ/adventofcode_2022/day1"
 	"log"
 
+	"github.com/ShajeshJ/adventofcode_2022/day1"
 	"go.uber.org/zap"
 )
 
