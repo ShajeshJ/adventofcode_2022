@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/ShajeshJ/adventofcode_2022/solutions/day2"
+	"github.com/ShajeshJ/adventofcode_2022/solutions/day3"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -19,5 +19,5 @@ func main() {
 	}
 
 	sugar := logger.Sugar()
-	day2.PartTwo(sugar)
+	day3.PartTwo(sugar)
 }
