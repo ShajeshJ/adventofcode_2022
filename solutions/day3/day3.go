@@ -63,7 +63,7 @@ func getCommonLetter(strs ...string) (rune, error) {
 	}
 
 	var overlaps []string
-	for r, _ := range runningOverlaps {
+	for r := range runningOverlaps {
 		overlaps = append(overlaps, string(r))
 	}
 
