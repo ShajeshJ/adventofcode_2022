@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/ShajeshJ/adventofcode_2022/day1"
+	"github.com/ShajeshJ/adventofcode_2022/solutions/day1"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
