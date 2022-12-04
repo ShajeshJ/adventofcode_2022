@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ShajeshJ/adventofcode_2022/common/utility"
 	"go.uber.org/zap"
 )
 
@@ -22,27 +23,17 @@ func getPartOneData() (data []string, err error) {
 }
 
 func PartOne(logger *zap.SugaredLogger) {
-	allFoods, err := getPartOneData()
-	if err != nil {
-		logger.Error(err)
-		return
-	}
-
 	mostCalories := NewTopList[int](1)
 	curElfCalories := 0
 
-	for _, food := range allFoods {
+	for _, food := range utility.ReadProblemInput(files, 1) {
 		if food == "" {
-			mostCalories.Push(curElfCalories)
+			mostCalories.TryPush(curElfCalories)
 			curElfCalories = 0
 			continue
 		}
 
-		calories, err := strconv.Atoi(food)
-		if err != nil {
-			logger.Errorw(err.Error(), "calories", calories)
-			return
-		}
+		calories, _ := strconv.Atoi(food)
 		curElfCalories += calories
 	}
 
@@ -50,27 +41,17 @@ func PartOne(logger *zap.SugaredLogger) {
 }
 
 func PartTwo(logger *zap.SugaredLogger) {
-	allFoods, err := getPartOneData()
-	if err != nil {
-		logger.Error(err)
-		return
-	}
-
 	mostCalories := NewTopList[int](3)
 	curElfCalories := 0
 
-	for _, food := range allFoods {
+	for _, food := range utility.ReadProblemInput(files, 1) {
 		if food == "" {
-			mostCalories.Push(curElfCalories)
+			mostCalories.TryPush(curElfCalories)
 			curElfCalories = 0
 			continue
 		}
 
-		calories, err := strconv.Atoi(food)
-		if err != nil {
-			logger.Errorw(err.Error(), "calories", calories)
-			return
-		}
+		calories, _ := strconv.Atoi(food)
 		curElfCalories += calories
 	}
 

@@ -21,7 +21,6 @@ func (e *Elf) IsRangeSubset(other Elf) bool {
 	return e.start >= other.start && e.end <= other.end
 }
 
-// 28-47,55-97
 func (e *Elf) HasOverlap(other Elf) bool {
 	return (e.end >= other.start && e.start <= other.end ||
 		other.end >= e.start && other.start <= e.end)

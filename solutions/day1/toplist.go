@@ -14,9 +14,9 @@ func NewTopList[T constraints.Ordered](size int) *TopList[T] {
 	return &TopList[T]{Size: size, data: make([]T, size)}
 }
 
-// Push will add `val` to the list if it's greater than at least 1 number in the list in order, and returns true.
+// TryPush will add `val` to the list if it's greater than at least 1 number in the list in order, and returns true.
 // Otherwise it does nothing and returns false
-func (t *TopList[T]) Push(val T) bool {
+func (t *TopList[T]) TryPush(val T) bool {
 	if val <= t.data[t.Size-1] {
 		return false
 	}
