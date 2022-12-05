@@ -1,11 +1,14 @@
-package day2
+package main
 
 import (
 	"embed"
+	"fmt"
 
+	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
-	"go.uber.org/zap"
 )
+
+var log = logging.GetLogger()
 
 //go:embed part1.txt
 var files embed.FS
@@ -30,9 +33,9 @@ var p1Scores = map[string]int{
 	"C Z": 6,
 }
 
-func PartOne(logger *zap.SugaredLogger) {
+func PartOne() any {
 	allRounds := util.ReadProblemInput(files, 1)
-	logger.Info(lookupAndSum(&p1Scores, &allRounds))
+	return lookupAndSum(&p1Scores, &allRounds)
 }
 
 var p2Scores = map[string]int{
@@ -47,7 +50,12 @@ var p2Scores = map[string]int{
 	"C Z": 7,
 }
 
-func PartTwo(logger *zap.SugaredLogger) {
+func PartTwo() any {
 	allRounds := util.ReadProblemInput(files, 1)
-	logger.Info(lookupAndSum(&p2Scores, &allRounds))
+	return lookupAndSum(&p2Scores, &allRounds)
+}
+
+func main() {
+	log.Infow(fmt.Sprintf("%v", PartOne()), "part", 1)
+	log.Infow(fmt.Sprintf("%v", PartTwo()), "part", 2)
 }
