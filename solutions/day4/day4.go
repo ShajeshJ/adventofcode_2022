@@ -4,8 +4,8 @@ import (
 	"embed"
 	"regexp"
 	"strconv"
-	"strings"
 
+	"github.com/ShajeshJ/adventofcode_2022/common/util"
 	"go.uber.org/zap"
 )
 
@@ -17,29 +17,25 @@ type Elf struct {
 	end   int
 }
 
-func (e *Elf) IsRangeSubset(other Elf) bool {
+func (e *Elf) Contains(other Elf) bool {
 	return e.start >= other.start && e.end <= other.end
 }
 
-func (e *Elf) HasOverlap(other Elf) bool {
+func (e *Elf) Intersects(other Elf) bool {
 	return (e.end >= other.start && e.start <= other.end ||
 		other.end >= e.start && other.start <= e.end)
 }
 
-var elfPairRegex = `(\d+)-(\d+),(\d+)-(\d+)`
+var inputRegex = regexp.MustCompile(`(\d+)-(\d+),(\d+)-(\d+)`)
 
 func getPartOneData() (elfPairs [][]Elf) {
-	bytes, _ := files.ReadFile("part1.txt")
-	for _, pairStr := range strings.Split(string(bytes), "\n") {
-		r := regexp.MustCompile(elfPairRegex)
-		matches := r.FindStringSubmatch(pairStr)
-
-		leftStart, _ := strconv.Atoi(matches[1])
-		leftEnd, _ := strconv.Atoi(matches[2])
-		rightStart, _ := strconv.Atoi(matches[3])
-		rightEnd, _ := strconv.Atoi(matches[4])
-
-		elfPairs = append(elfPairs, []Elf{{leftStart, leftEnd}, {rightStart, rightEnd}})
+	for _, line := range util.ReadProblemInput(files, 1) {
+		var p []int
+		for _, m := range inputRegex.FindStringSubmatch(line)[1:] {
+			temp, _ := strconv.Atoi(m)
+			p = append(p, temp)
+		}
+		elfPairs = append(elfPairs, []Elf{{p[0], p[1]}, {p[2], p[3]}})
 	}
 	return
 }
@@ -50,7 +46,7 @@ func PartOne(logger *zap.SugaredLogger) {
 	total := 0
 
 	for _, pair := range elfPairs {
-		if pair[0].IsRangeSubset(pair[1]) || pair[1].IsRangeSubset(pair[0]) {
+		if pair[0].Contains(pair[1]) || pair[1].Contains(pair[0]) {
 			total += 1
 		}
 	}
@@ -64,7 +60,7 @@ func PartTwo(logger *zap.SugaredLogger) {
 	total := 0
 
 	for _, pair := range elfPairs {
-		if pair[0].HasOverlap(pair[1]) {
+		if pair[0].Intersects(pair[1]) {
 			total += 1
 		}
 	}
