@@ -12,6 +12,8 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
+var log = logging.GetLogger()
+
 //go:embed part1.txt
 var files embed.FS
 
@@ -70,7 +72,6 @@ func PartTwo() any {
 }
 
 func main() {
-	log := logging.GetLogger()
 	log.Infow(fmt.Sprintf("%v", PartOne()), "part", 1)
 	log.Infow(fmt.Sprintf("%v", PartTwo()), "part", 2)
 }
