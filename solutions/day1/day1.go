@@ -1,12 +1,15 @@
-package day1
+package main
 
 import (
 	"embed"
+	"fmt"
 	"strconv"
 	"strings"
 
+	ds "github.com/ShajeshJ/adventofcode_2022/common/datastructures"
+	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
-	"go.uber.org/zap"
+	"golang.org/x/exp/constraints"
 )
 
 //go:embed part1.txt
@@ -22,26 +25,16 @@ func getPartOneData() (data []string, err error) {
 	return
 }
 
-func PartOne(logger *zap.SugaredLogger) {
-	mostCalories := NewTopList[int](1)
-	curElfCalories := 0
-
-	for _, food := range util.ReadProblemInput(files, 1) {
-		if food == "" {
-			mostCalories.TryPush(curElfCalories)
-			curElfCalories = 0
-			continue
-		}
-
-		calories, _ := strconv.Atoi(food)
-		curElfCalories += calories
+func getSum[T constraints.Ordered](l *ds.TopList[T]) T {
+	var total T
+	for _, item := range l.Values {
+		total += item
 	}
-
-	logger.Info(mostCalories.Sum())
+	return total
 }
 
-func PartTwo(logger *zap.SugaredLogger) {
-	mostCalories := NewTopList[int](3)
+func PartOne() any {
+	mostCalories := ds.NewTopList[int](1)
 	curElfCalories := 0
 
 	for _, food := range util.ReadProblemInput(files, 1) {
@@ -55,5 +48,29 @@ func PartTwo(logger *zap.SugaredLogger) {
 		curElfCalories += calories
 	}
 
-	logger.Info(mostCalories.Sum())
+	return getSum(mostCalories)
+}
+
+func PartTwo() any {
+	mostCalories := ds.NewTopList[int](3)
+	curElfCalories := 0
+
+	for _, food := range util.ReadProblemInput(files, 1) {
+		if food == "" {
+			mostCalories.TryPush(curElfCalories)
+			curElfCalories = 0
+			continue
+		}
+
+		calories, _ := strconv.Atoi(food)
+		curElfCalories += calories
+	}
+
+	return getSum(mostCalories)
+}
+
+func main() {
+	log := logging.GetLogger()
+	log.Infow(fmt.Sprintf("%v", PartOne()), "part", 1)
+	log.Infow(fmt.Sprintf("%v", PartTwo()), "part", 2)
 }
