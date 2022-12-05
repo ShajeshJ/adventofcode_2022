@@ -35,13 +35,13 @@ func getCommonLetter(strs ...string) rune {
 		}
 	}
 
-	return 0
+	return 0 // Shouldn't happen
 }
 
 func getPriority(r rune) int {
 	if 'a' <= r && r <= 'z' {
 		return int(r - 'a' + 1)
-	} else { //'A' <= r && r <= 'Z'
+	} else { // Should only catch: 'A' <= r && r <= 'Z'
 		return int(r - 'A' + 27)
 	}
 }
