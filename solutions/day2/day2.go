@@ -2,23 +2,13 @@ package day2
 
 import (
 	"embed"
-	"strings"
 
+	"github.com/ShajeshJ/adventofcode_2022/common/util"
 	"go.uber.org/zap"
 )
 
 //go:embed part1.txt
 var files embed.FS
-
-func getPartOneData() (data []string, err error) {
-	bytes, err := files.ReadFile("part1.txt")
-	if err != nil {
-		return
-	}
-
-	data = strings.Split(string(bytes), "\n")
-	return
-}
 
 func lookupAndSum[K comparable](lookupTable *map[K]int, lookupKeys *[]K) int {
 	total := 0
@@ -41,12 +31,7 @@ var p1Scores = map[string]int{
 }
 
 func PartOne(logger *zap.SugaredLogger) {
-	allRounds, err := getPartOneData()
-	if err != nil {
-		logger.Error(err)
-		return
-	}
-
+	allRounds := util.ReadProblemInput(files, 1)
 	logger.Info(lookupAndSum(&p1Scores, &allRounds))
 }
 
@@ -63,11 +48,6 @@ var p2Scores = map[string]int{
 }
 
 func PartTwo(logger *zap.SugaredLogger) {
-	allRounds, err := getPartOneData()
-	if err != nil {
-		logger.Error(err)
-		return
-	}
-
+	allRounds := util.ReadProblemInput(files, 1)
 	logger.Info(lookupAndSum(&p2Scores, &allRounds))
 }

@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ShajeshJ/adventofcode_2022/common/utility"
+	"github.com/ShajeshJ/adventofcode_2022/common/util"
 	"go.uber.org/zap"
 )
 
@@ -26,7 +26,7 @@ func PartOne(logger *zap.SugaredLogger) {
 	mostCalories := NewTopList[int](1)
 	curElfCalories := 0
 
-	for _, food := range utility.ReadProblemInput(files, 1) {
+	for _, food := range util.ReadProblemInput(files, 1) {
 		if food == "" {
 			mostCalories.TryPush(curElfCalories)
 			curElfCalories = 0
@@ -44,7 +44,7 @@ func PartTwo(logger *zap.SugaredLogger) {
 	mostCalories := NewTopList[int](3)
 	curElfCalories := 0
 
-	for _, food := range utility.ReadProblemInput(files, 1) {
+	for _, food := range util.ReadProblemInput(files, 1) {
 		if food == "" {
 			mostCalories.TryPush(curElfCalories)
 			curElfCalories = 0
