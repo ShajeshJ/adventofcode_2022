@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"fmt"
+	"strings"
 
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
@@ -13,9 +14,9 @@ var log = logging.GetLogger()
 //go:embed part1.txt
 var files embed.FS
 
-func hasDuplicates(counter map[rune]int) bool {
-	for _, count := range counter {
-		if count > 1 {
+func hasDuplicateRunes(s string) bool {
+	for _, c := range s {
+		if strings.Count(s, string(c)) > 1 {
 			return true
 		}
 	}
@@ -25,28 +26,17 @@ func hasDuplicates(counter map[rune]int) bool {
 func PartOne(n int) any {
 	seq := util.ReadProblemInput(files, 1)[0]
 
-	buffer := []rune{}
-	runeCount := map[rune]int{}
+	// Must be a minimum of n characters long
+	buffer := seq[:n]
+	counter := n
 
-	// Add first n-1 chars to reach the required length
-	for _, c := range seq[:n-1] {
-		buffer = append(buffer, c)
-		runeCount[c]++
-	}
-
-	counter := n - 1
-
-	for _, c := range seq[n-1:] {
-		buffer = append(buffer, c)
-		runeCount[c]++
-		counter++
-
-		if !hasDuplicates(runeCount) {
+	for _, c := range seq[n:] {
+		if !hasDuplicateRunes(buffer) {
 			break
 		}
-
-		runeCount[buffer[0]]--
 		buffer = buffer[1:]
+		buffer += string(c)
+		counter++
 	}
 
 	return counter
