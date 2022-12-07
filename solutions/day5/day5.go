@@ -4,7 +4,6 @@ import (
 	"embed"
 	"fmt"
 	"regexp"
-	"strconv"
 
 	ds "github.com/ShajeshJ/adventofcode_2022/common/datastructures"
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
@@ -57,8 +56,7 @@ func getPartOneInput() ([]ds.Stack[rune], []Step) {
 	for i := sepIndex + 1; i < len(lines); i++ {
 		var step Step
 		for _, m := range stepRegex.FindStringSubmatch(lines[i])[1:] {
-			temp, _ := strconv.Atoi(m)
-			step = append(step, temp)
+			step = append(step, util.AtoiNoError(m))
 		}
 		steps = append(steps, step)
 	}

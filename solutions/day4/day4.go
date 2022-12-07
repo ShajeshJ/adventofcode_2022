@@ -4,7 +4,6 @@ import (
 	"embed"
 	"fmt"
 	"regexp"
-	"strconv"
 
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
@@ -35,8 +34,7 @@ func getPartOneData() (elfPairs [][]Elf) {
 	for _, line := range util.ReadProblemInput(files, 1) {
 		var p []int
 		for _, m := range inputRegex.FindStringSubmatch(line)[1:] {
-			temp, _ := strconv.Atoi(m)
-			p = append(p, temp)
+			p = append(p, util.AtoiNoError(m))
 		}
 		elfPairs = append(elfPairs, []Elf{{p[0], p[1]}, {p[2], p[3]}})
 	}

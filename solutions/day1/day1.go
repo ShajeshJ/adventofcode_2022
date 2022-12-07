@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"fmt"
-	"strconv"
 	"strings"
 
 	ds "github.com/ShajeshJ/adventofcode_2022/common/datastructures"
@@ -45,9 +44,7 @@ func PartOne() any {
 			curElfCalories = 0
 			continue
 		}
-
-		calories, _ := strconv.Atoi(food)
-		curElfCalories += calories
+		curElfCalories += util.AtoiNoError(food)
 	}
 
 	return getSum(mostCalories)
@@ -63,9 +60,7 @@ func PartTwo() any {
 			curElfCalories = 0
 			continue
 		}
-
-		calories, _ := strconv.Atoi(food)
-		curElfCalories += calories
+		curElfCalories += util.AtoiNoError(food)
 	}
 
 	return getSum(mostCalories)
