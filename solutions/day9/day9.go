@@ -23,7 +23,7 @@ func (p *Position) Move(m Movement) {
 	(*p)[1] += m[1]
 }
 
-var moveVec = map[string]Movement{
+var moveUnitVec = map[string]Movement{
 	"L": {-1, 0},
 	"R": {1, 0},
 	"U": {0, 1},
@@ -57,7 +57,7 @@ func SimulateRope(numKnots int) int {
 		dir, amt := headMoves[0], util.AtoiNoError(headMoves[1])
 
 		for i := 0; i < amt; i++ {
-			knots[0].Move(moveVec[dir])
+			knots[0].Move(moveUnitVec[dir])
 
 			for j := 1; j < len(knots); j++ {
 				knots[j].Move(GetKnotMove(knots[j-1], knots[j]))
