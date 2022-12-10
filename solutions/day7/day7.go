@@ -22,18 +22,28 @@ type Dir struct {
 }
 
 type Computer struct {
+	Root               *Dir
 	Cwd                *Dir
 	FolderExitCallback func(c *Dir)
 }
 
 func NewComputer(folderExitCallback func(c *Dir)) Computer {
-	c := Computer{&Dir{Dirs: map[string]*Dir{}}, folderExitCallback}
-	c.Mkdir("/")
-	return c
+	return Computer{
+		Root:               &Dir{"/", nil, map[string]*Dir{}, 0},
+		Cwd:                nil,
+		FolderExitCallback: folderExitCallback,
+	}
 }
 
 func (c *Computer) Mkdir(name string) {
 	c.Cwd.Dirs[name] = &Dir{name, c.Cwd, map[string]*Dir{}, 0}
+}
+
+func (c *Computer) FinalizeCwd() {
+	for _, d := range c.Cwd.Dirs {
+		c.Cwd.Size += d.Size
+	}
+	c.FolderExitCallback(c.Cwd)
 }
 
 func (c *Computer) RunCmd(tokens ...string) {
@@ -42,16 +52,17 @@ func (c *Computer) RunCmd(tokens ...string) {
 	}
 
 	// else command is "cd"
+	if tokens[1] == "/" {
+		c.Cwd = c.Root
+		return
+	}
 	if tokens[1] != ".." {
 		c.Cwd = c.Cwd.Dirs[tokens[1]]
 		return
 	}
 
 	// exiting the folder; do exit-folder processing
-	for _, d := range c.Cwd.Dirs {
-		c.Cwd.Size += d.Size
-	}
-	c.FolderExitCallback(c.Cwd)
+	c.FinalizeCwd()
 	c.Cwd = c.Cwd.Parent
 }
 
@@ -79,10 +90,11 @@ func BuildComputer(folderExitCallback func(cwd *Dir)) Computer {
 		c.ReadlsOutput(tokens...)
 	}
 
-	// Return to root, and process remaining folders
+	// Processing remaining folders back up to the root
 	for c.Cwd.Parent != nil {
 		c.RunCmd("cd", "..")
 	}
+	c.FinalizeCwd() // Also process root itself
 
 	return c
 }
@@ -104,7 +116,7 @@ func PartTwo() any {
 
 	root := BuildComputer(func(cwd *Dir) {
 		allDirs = append(allDirs, cwd)
-	}).Cwd.Dirs["/"]
+	}).Root
 
 	const (
 		totalDisk    = 70_000_000
