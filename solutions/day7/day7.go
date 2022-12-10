@@ -3,7 +3,7 @@ package main
 import (
 	"embed"
 	"fmt"
-	"regexp"
+	"strings"
 
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
@@ -14,79 +14,83 @@ var log = logging.GetLogger()
 //go:embed part1.txt
 var files embed.FS
 
-// type File struct {
-// 	name string
-// 	size int
-// }
-
 type Dir struct {
-	Parent *Dir
 	Name   string
-	// files []File
-	Size int
-	Dirs map[string]*Dir
+	Parent *Dir
+	Dirs   map[string]*Dir
+	Size   int
 }
 
-var (
-	cdCmd      = regexp.MustCompile(`\$ cd (.+)`)
-	dirOutput  = regexp.MustCompile(`dir (.+)`)
-	fileOutput = regexp.MustCompile(`(\d+) (.+)`)
-)
+type Computer struct {
+	Cwd                *Dir
+	FolderExitCallback func(c *Dir)
+}
 
-func traverseDir(finishedDirCallback func(cwd *Dir)) *Dir {
-	terminal := util.ReadProblemInput(files, 1)
+func NewComputer(folderExitCallback func(c *Dir)) Computer {
+	c := Computer{&Dir{Dirs: map[string]*Dir{}}, folderExitCallback}
+	c.Mkdir("/")
+	return c
+}
 
-	cwd := &Dir{Name: "/", Dirs: map[string]*Dir{}}
+func (c *Computer) Mkdir(name string) {
+	c.Cwd.Dirs[name] = &Dir{name, c.Cwd, map[string]*Dir{}, 0}
+}
 
-	finishDir := func() {
-		// Finished cwd; add sub-dir sizes to cwd before moving up
-		for _, d := range cwd.Dirs {
-			cwd.Size += d.Size
-		}
-		finishedDirCallback(cwd)
+func (c *Computer) RunCmd(tokens ...string) {
+	if tokens[0] == "ls" {
+		return
 	}
 
-	for i := 0; i < len(terminal); i++ {
-		if res := cdCmd.FindStringSubmatch(terminal[i]); len(res) > 1 {
-			if res[1] == ".." {
-				finishDir()
-				cwd = cwd.Parent
-			} else if nextDir, ok := cwd.Dirs[res[1]]; ok {
-				cwd = nextDir
-			}
+	// else command is "cd"
+	if tokens[1] != ".." {
+		c.Cwd = c.Cwd.Dirs[tokens[1]]
+		return
+	}
+
+	// exiting the folder; do exit-folder processing
+	for _, d := range c.Cwd.Dirs {
+		c.Cwd.Size += d.Size
+	}
+	c.FolderExitCallback(c.Cwd)
+	c.Cwd = c.Cwd.Parent
+}
+
+func (c *Computer) ReadlsOutput(tokens ...string) {
+	if tokens[0] == "dir" {
+		c.Mkdir(tokens[1])
+	} else {
+		// else is a file
+		c.Cwd.Size += util.AtoiNoError(tokens[0])
+	}
+}
+
+func BuildComputer(folderExitCallback func(cwd *Dir)) Computer {
+	c := NewComputer(folderExitCallback)
+
+	for _, line := range util.ReadProblemInput(files, 1) {
+		tokens := strings.Split(line, " ")
+
+		if tokens[0] == "$" {
+			c.RunCmd(tokens[1:]...)
 			continue
 		}
 
-		// Otherwise we process an ls command output
-		for {
-			i++
-			if i >= len(terminal) {
-				break // EOF
-			} else if res := fileOutput.FindStringSubmatch(terminal[i]); len(res) > 1 {
-				cwd.Size += util.AtoiNoError(res[1])
-			} else if res := dirOutput.FindStringSubmatch(terminal[i]); len(res) > 1 {
-				cwd.Dirs[res[1]] = &Dir{Name: res[1], Parent: cwd, Dirs: map[string]*Dir{}}
-			} else {
-				break // ls output complete
-			}
-		}
-		i-- // Go back 1 so command isn't skipped in next iter
+		// Otherwise we're reading ls output
+		c.ReadlsOutput(tokens...)
 	}
 
-	// Calculate leftovers all the way up to root dir
-	for cwd.Parent != nil {
-		finishDir()
-		cwd = cwd.Parent
+	// Return to root, and process remaining folders
+	for c.Cwd.Parent != nil {
+		c.RunCmd("cd", "..")
 	}
 
-	finishDir() // Calculate root dir
-	return cwd
+	return c
 }
 
 func PartOne() any {
 	const maxDirSize = 100_000
 	totalSizeOfUnder100k := 0
-	traverseDir(func(cwd *Dir) {
+	BuildComputer(func(cwd *Dir) {
 		if cwd.Size <= maxDirSize {
 			totalSizeOfUnder100k += cwd.Size
 		}
@@ -98,9 +102,9 @@ func PartOne() any {
 func PartTwo() any {
 	allDirs := []*Dir{}
 
-	root := traverseDir(func(cwd *Dir) {
+	root := BuildComputer(func(cwd *Dir) {
 		allDirs = append(allDirs, cwd)
-	})
+	}).Cwd.Dirs["/"]
 
 	const (
 		totalDisk    = 70_000_000
