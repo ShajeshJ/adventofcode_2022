@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	ds "github.com/ShajeshJ/adventofcode_2022/common/datastructures"
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
 )
@@ -22,23 +23,19 @@ func GetDelay(instruction string) int {
 	}
 }
 
-func Pop(instructions []string) (string, []string) {
-	return instructions[0], instructions[1:]
-}
-
 func RunCRT(doCycleProcessing func(cycle, x int)) {
 	x := 1
 	cycle := 0
 	delay := 0
 	curInstruction := ""
-	instructions := util.ReadProblemInput(files, 1)
+	instructions := ds.Stack[string](util.ReadProblemInput(files, 1))
 
 	for len(instructions) != 0 {
 		cycle++
 		doCycleProcessing(cycle, x)
 
 		if curInstruction == "" {
-			curInstruction, instructions = Pop(instructions)
+			curInstruction, _ = instructions.Pop()
 			delay = GetDelay(curInstruction)
 		}
 
