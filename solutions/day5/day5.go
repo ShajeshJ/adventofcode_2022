@@ -42,7 +42,7 @@ func getPartOneInput() ([]ds.Stack[rune], []Step) {
 
 	stacks := make([]ds.Stack[rune], 9)
 
-	for i := sepIndex - 1; i >= 0; i-- {
+	for i := sepIndex - 2; i >= 0; i-- {
 		for j := 0; j < len(stacks); j++ {
 			strRunes := []rune(lines[i])
 			if strRunes[j*4+1] == ' ' {
