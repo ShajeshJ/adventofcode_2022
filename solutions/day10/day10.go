@@ -26,20 +26,16 @@ func Pop(instructions []string) (string, []string) {
 	return instructions[0], instructions[1:]
 }
 
-func PartOne() any {
-	instructions := util.ReadProblemInput(files, 1)
+func RunCRT(doCycleProcessing func(cycle, x int)) {
 	x := 1
 	cycle := 0
 	delay := 0
-	total := 0
 	curInstruction := ""
+	instructions := util.ReadProblemInput(files, 1)
 
 	for len(instructions) != 0 {
 		cycle++
-		if (cycle-20)%40 == 0 {
-			fmt.Println(cycle)
-			total += cycle * x
-		}
+		doCycleProcessing(cycle, x)
 
 		if curInstruction == "" {
 			curInstruction, instructions = Pop(instructions)
@@ -56,45 +52,33 @@ func PartOne() any {
 		}
 		curInstruction = ""
 	}
+}
 
+func PartOne() any {
+	total := 0
+	RunCRT(func(cycle, x int) {
+		if (cycle-20)%40 == 0 {
+			total += cycle * x
+		}
+	})
 	return total
 }
 
 func PartTwo() any {
-	instructions := util.ReadProblemInput(files, 1)
-	x := 1
-	cycle := 0
-	delay := 0
-	curInstruction := ""
 	screen := ""
 
-	for len(instructions) != 0 {
-		cycle++
+	RunCRT(func(cycle, x int) {
 		if cycle%40 == 1 {
 			screen += "\n"
 		}
 
-		if cycle%40-1 >= x-1 && cycle%40-1 <= x+1 {
+		curPixel := (cycle - 1) % 40
+		if curPixel >= x-1 && curPixel <= x+1 {
 			screen += "#"
 		} else {
 			screen += "."
 		}
-
-		if curInstruction == "" {
-			curInstruction, instructions = Pop(instructions)
-			delay = GetDelay(curInstruction)
-		}
-
-		delay--
-		if delay > 0 {
-			continue
-		}
-
-		if curInstruction != "noop" {
-			x += util.AtoiNoError(strings.Split(curInstruction, " ")[1])
-		}
-		curInstruction = ""
-	}
+	})
 
 	return screen
 }
