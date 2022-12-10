@@ -30,14 +30,14 @@ var moveVec = map[string]Movement{
 	"D": {0, -1},
 }
 
-func GetTailMove(posH, posT Position) Movement {
-	m := Movement{posH[0] - posT[0], posH[1] - posT[1]}
+func GetKnotMove(prevKnot, nextKnot Position) Movement {
+	m := Movement{prevKnot[0] - nextKnot[0], prevKnot[1] - nextKnot[1]}
 
 	if m[0] >= -1 && m[0] <= 1 && m[1] >= -1 && m[1] <= 1 {
-		return Movement{0, 0} // Still touching within diagonally; no movement
+		return Movement{0, 0} // Still touching within diagonal distance
 	}
 
-	// Normalize movement
+	// Normalize movement vectors
 	if m[0] != 0 {
 		m[0] = m[0] / int(math.Abs(float64(m[0])))
 	}
@@ -48,53 +48,34 @@ func GetTailMove(posH, posT Position) Movement {
 	return m
 }
 
-func PartOne() any {
-	posH := Position{0, 0}
-	posT := Position{0, 0}
-	visited := map[Position]int{posT: 1}
+func SimulateRope(numKnots int) int {
+	knots := make([]Position, numKnots)
+	visited := map[Position]int{knots[numKnots-1]: 1}
 
 	for _, m := range util.ReadProblemInput(files, 1) {
-		mParts := strings.Split(m, " ")
-		dir, amt := mParts[0], util.AtoiNoError(mParts[1])
-
-		for i := 0; i < amt; i++ {
-			posH.Move(moveVec[dir])
-			posT.Move(GetTailMove(posH, posT))
-			visited[posT]++
-		}
-	}
-
-	numVisited := 0
-	for range visited {
-		numVisited++
-	}
-	return numVisited
-}
-
-func PartTwo() any {
-	knots := make([]Position, 10)
-	visited := map[Position]int{knots[9]: 1}
-
-	for _, m := range util.ReadProblemInput(files, 1) {
-		mParts := strings.Split(m, " ")
-		dir, amt := mParts[0], util.AtoiNoError(mParts[1])
+		headMoves := strings.Split(m, " ")
+		dir, amt := headMoves[0], util.AtoiNoError(headMoves[1])
 
 		for i := 0; i < amt; i++ {
 			knots[0].Move(moveVec[dir])
 
 			for j := 1; j < len(knots); j++ {
-				knots[j].Move(GetTailMove(knots[j-1], knots[j]))
+				knots[j].Move(GetKnotMove(knots[j-1], knots[j]))
 			}
 
-			visited[knots[len(knots)-1]]++
+			visited[knots[numKnots-1]]++
 		}
 	}
 
-	numVisited := 0
-	for range visited {
-		numVisited++
-	}
-	return numVisited
+	return len(visited)
+}
+
+func PartOne() any {
+	return SimulateRope(2)
+}
+
+func PartTwo() any {
+	return SimulateRope(10)
 }
 
 func main() {
