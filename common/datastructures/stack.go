@@ -11,7 +11,7 @@ func (s *Stack[T]) IsEmpty() bool {
 }
 
 func (s *Stack[T]) Push(val T) {
-	*s = append(*s, val)
+	s.PushN([]T{val})
 }
 
 func (s *Stack[T]) Pop() (T, bool) {
@@ -24,11 +24,14 @@ func (s *Stack[T]) PopN(n int) ([]T, bool) {
 		return *new([]T), false
 	}
 
-	val := (*s)[len(*s)-n:]
-	*s = (*s)[:len(*s)-n]
+	// Explicitly create a new slice to avoid memory overwriting during push
+	val := make([]T, n)
+	copy(val, (*s)[:n])
+
+	*s = (*s)[n:]
 	return val, true
 }
 
 func (s *Stack[T]) PushN(val []T) {
-	*s = append(*s, val...)
+	*s = append(val, *s...)
 }
