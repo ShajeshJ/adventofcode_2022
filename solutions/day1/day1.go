@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"fmt"
-	"strings"
 
 	ds "github.com/ShajeshJ/adventofcode_2022/common/datastructures"
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
@@ -15,16 +14,6 @@ var log = logging.GetLogger()
 
 //go:embed part1.txt
 var files embed.FS
-
-func getPartOneData() (data []string, err error) {
-	bytes, err := files.ReadFile("part1.txt")
-	if err != nil {
-		return
-	}
-
-	data = strings.Split(string(bytes), "\n")
-	return
-}
 
 func getSum[T constraints.Ordered](l *ds.TopList[T]) T {
 	var total T
