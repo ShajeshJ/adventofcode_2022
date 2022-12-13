@@ -31,8 +31,7 @@ type Square struct {
 }
 
 type TraversedSquare struct {
-	Self    Square
-	Parent  Square
+	Square
 	F, G, H int
 }
 
@@ -73,7 +72,7 @@ func ManhattanDist(start Square, dest Square) int {
 
 func FindShortestPath(hmap map[Coordinates]Square, start Square, end Square) (TraversedSquare, bool) {
 	openList, closedList := map[Coordinates]TraversedSquare{}, map[Coordinates]TraversedSquare{}
-	openList[start.Coords] = TraversedSquare{Self: start, F: 0, G: 0, H: 0}
+	openList[start.Coords] = TraversedSquare{Square: start, F: 0, G: 0, H: 0}
 
 	var found TraversedSquare
 
@@ -86,13 +85,13 @@ func FindShortestPath(hmap map[Coordinates]Square, start Square, end Square) (Tr
 			}
 		}
 
-		delete(openList, q.Self.Coords)
+		delete(openList, q.Coords)
 
 		candidateSuccessorCoords := []Coordinates{
-			{q.Self.Coords.Row() - 1, q.Self.Coords.Col()},
-			{q.Self.Coords.Row() + 1, q.Self.Coords.Col()},
-			{q.Self.Coords.Row(), q.Self.Coords.Col() - 1},
-			{q.Self.Coords.Row(), q.Self.Coords.Col() + 1},
+			{q.Coords.Row() - 1, q.Coords.Col()},
+			{q.Coords.Row() + 1, q.Coords.Col()},
+			{q.Coords.Row(), q.Coords.Col() - 1},
+			{q.Coords.Row(), q.Coords.Col() + 1},
 		}
 
 		for _, c := range candidateSuccessorCoords {
@@ -102,37 +101,37 @@ func FindShortestPath(hmap map[Coordinates]Square, start Square, end Square) (Tr
 				continue // Invalid coord
 			}
 
-			if s.Elevation > q.Self.Elevation+1 {
+			if s.Elevation > q.Elevation+1 {
 				continue // Too high to reach
 			}
 
-			successor := TraversedSquare{Self: s, Parent: q.Self}
+			successor := TraversedSquare{Square: s}
 			successor.G = q.G + 1
-			successor.H = ManhattanDist(successor.Self, end) + (q.Self.Elevation - s.Elevation)
+			successor.H = ManhattanDist(successor.Square, end) + (s.Elevation - q.Elevation)
 			successor.F = successor.G + successor.H
 
-			if successor.Self.IsEnd {
+			if successor.IsEnd {
 				found = successor
 				break
 			}
 
-			if opened, exists := openList[successor.Self.Coords]; exists && opened.F < successor.F {
+			if opened, exists := openList[successor.Coords]; exists && opened.F < successor.F {
 				continue // There's a to-be-processed path that's better than this successor
 			}
 
-			if closed, exists := closedList[successor.Self.Coords]; exists && closed.F < successor.F {
+			if closed, exists := closedList[successor.Coords]; exists && closed.F < successor.F {
 				continue // There's an already processed path that was better than this successor
 			}
 
-			openList[successor.Self.Coords] = successor
-			closedList[q.Self.Coords] = q
+			openList[successor.Coords] = successor
+			closedList[q.Coords] = q
 		}
 
 		if found != (TraversedSquare{}) {
 			break
 		}
 
-		closedList[q.Self.Coords] = q
+		closedList[q.Coords] = q
 	}
 
 	return found, found != (TraversedSquare{})
