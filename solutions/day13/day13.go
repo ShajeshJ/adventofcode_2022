@@ -13,7 +13,7 @@ var log = logging.GetLogger()
 //go:embed part1.txt
 var files embed.FS
 
-type PacketPair [2][]any
+type Packet []any
 
 type PacketParser struct {
 	Tokens []rune
@@ -58,9 +58,9 @@ func (p *PacketParser) ParseList() []any {
 	return val
 }
 
-func getPartOneData() []PacketPair {
-	var received []PacketPair
-	var curPacket PacketPair
+func getPartOneData() [][2]Packet {
+	var receivedPairs [][2]Packet
+	var curPair [2]Packet
 	fillIndex := 0
 
 	inputLines := util.ReadProblemInput(files, 1)
@@ -71,18 +71,18 @@ func getPartOneData() []PacketPair {
 
 	for _, line := range inputLines {
 		if line == "" {
-			received = append(received, curPacket)
-			curPacket = PacketPair{}
+			receivedPairs = append(receivedPairs, curPair)
+			curPair = [2]Packet{}
 			fillIndex = 0
 			continue
 		}
 
 		p := PacketParser{[]rune(line)}
-		curPacket[fillIndex] = p.ParseList()
+		curPair[fillIndex] = p.ParseList()
 		fillIndex++
 	}
 
-	return received
+	return receivedPairs
 }
 
 type CompareResult int
@@ -151,7 +151,22 @@ func PartOne() any {
 	return total
 }
 
-func FindPacketIndex(packet []any, others [][]any) int {
+func getPartTwoData() []Packet {
+	var receivedPairs []Packet
+
+	for _, line := range util.ReadProblemInput(files, 1) {
+		if line == "" {
+			continue
+		}
+
+		p := PacketParser{[]rune(line)}
+		receivedPairs = append(receivedPairs, p.ParseList())
+	}
+
+	return receivedPairs
+}
+
+func FindPacketIndex(packet Packet, others []Packet) int {
 	index := 1
 	for _, other := range others {
 		if result := CompareLists(other, packet); result == Valid {
@@ -162,17 +177,12 @@ func FindPacketIndex(packet []any, others [][]any) int {
 }
 
 func PartTwo() any {
-	divPackets := [][]any{
+	divPackets := []Packet{
 		{[]any{2}},
 		{[]any{6}},
 	}
 
-	var packets [][]any
-	// Unpack the pairs
-	for _, pair := range getPartOneData() {
-		packets = append(packets, pair[0])
-		packets = append(packets, pair[1])
-	}
+	packets := getPartTwoData()
 
 	decoderKey := FindPacketIndex(divPackets[0], append(packets, divPackets[1]))
 	decoderKey *= FindPacketIndex(divPackets[1], append(packets, divPackets[0]))
