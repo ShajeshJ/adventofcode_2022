@@ -139,7 +139,7 @@ func PartTwo() any {
 	// But reducing item worry by a particular modulo will affect
 	// a monkey's divisible check if the modulo does not contain
 	// the monkey's divisibleNum as a factor; so we make the
-	// the modulo equal to a production of all monkey's divisibleNum
+	// the modulo equal to a product of all monkey's divisibleNum
 	modReducer := 1
 	for _, m := range monkeys {
 		modReducer *= m.divisibleNum
