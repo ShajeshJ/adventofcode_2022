@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"fmt"
-	"math"
 	"strings"
 
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
@@ -37,12 +36,11 @@ func GetKnotMove(prevKnot, nextKnot Position) Movement {
 		return Movement{0, 0} // Still touching within diagonal distance
 	}
 
-	// Normalize movement vectors
 	if m[0] != 0 {
-		m[0] = m[0] / int(math.Abs(float64(m[0])))
+		m[0] = util.Normalize(m[0])
 	}
 	if m[1] != 0 {
-		m[1] = m[1] / int(math.Abs(float64(m[1])))
+		m[1] = util.Normalize(m[1])
 	}
 
 	return m
