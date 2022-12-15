@@ -4,7 +4,6 @@ import (
 	"embed"
 	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
@@ -34,12 +33,14 @@ func (c *CaveMap) Depth() int {
 }
 
 func (c *CaveMap) Get(x int, y int) MapFeature {
-	return c.Features[y][x-c.Xoffset+2]
+	return c.Features[y][x-c.Xoffset]
 }
 
+// Set will set the given `val` at the coordinates
+// Note: This operation will scale the 2D slices as needed to fit new coordinates
 func (c *CaveMap) Set(x int, y int, val MapFeature) {
 	// Increase X to the left to always keep 1 column as buffer
-	for x-c.Xoffset+2 < 1 && val != Air {
+	for x-c.Xoffset < 1 {
 		for eachY := 0; eachY < len(c.Features); eachY++ {
 			c.Features[eachY] = append([]MapFeature{Air}, c.Features[eachY]...)
 		}
@@ -47,65 +48,48 @@ func (c *CaveMap) Set(x int, y int, val MapFeature) {
 	}
 
 	// Increase X to the right to always keep 1 column as buffer
-	for x-c.Xoffset+2 >= len(c.Features[y])-1 && val != Air {
+	for x-c.Xoffset >= len(c.Features[0])-1 {
 		for eachY := 0; eachY < len(c.Features); eachY++ {
 			c.Features[eachY] = append(c.Features[eachY], Air)
 		}
 	}
-	c.Features[y][x-c.Xoffset+2] = val
+
+	// Increase Y Downwards as needed
+	for y >= len(c.Features) {
+		c.Features = append(c.Features, make([]MapFeature, len(c.Features[0])))
+	}
+
+	c.Features[y][x-c.Xoffset] = val
 }
 
-func NewCaveMap(minX, maxX, maxY int) CaveMap {
+func NewCaveMap(x, y int, val MapFeature) CaveMap {
 	cavemap := CaveMap{
-		Xoffset:  minX + 1,
-		Features: make([][]MapFeature, maxY+1), // 0 <= depth <= maxY
+		Xoffset:  x - 1,
+		Features: make([][]MapFeature, y+1),
 	}
 	for i := 0; i < len(cavemap.Features); i++ {
-		// maxX <= len <= maxX && Add 1 column on either side
-		cavemap.Features[i] = make([]MapFeature, maxX-minX+1+2)
+		cavemap.Features[i] = make([]MapFeature, 3)
 	}
+	cavemap.Set(x, y, val)
 	return cavemap
 }
 
 func getPartOneData() CaveMap {
-	// Get size our map
-	minX, maxX := 1000, 0
-	maxY := 0
+	cavemap := NewCaveMap(500, 0, SandSource)
 	pointRegex := regexp.MustCompile(`(\d+),(\d+)`)
 
-	data := util.ReadProblemInput(files, 1)
-
-	for _, line := range data {
-		for _, point := range pointRegex.FindAllStringSubmatch(line, -1) {
-			x := util.AtoiNoError(point[1])
-			if x < minX {
-				minX = x
-			}
-			if x > maxX {
-				maxX = x
-			}
-
-			y := util.AtoiNoError(point[2])
-			if y > maxY {
-				maxY = y
-			}
+	for _, line := range util.ReadProblemInput(files, 1) {
+		formationPoints := pointRegex.FindAllStringSubmatch(line, -1)
+		prev := []int{
+			util.AtoiNoError(formationPoints[0][1]),
+			util.AtoiNoError(formationPoints[0][2]),
 		}
-	}
 
-	cavemap := NewCaveMap(minX, maxX, maxY)
-
-	for _, line := range data {
-		formationPoints := strings.Split(line, " -> ")
-		prev := util.Map(
-			strings.Split(formationPoints[0], ","),
-			func(x string) int { return util.AtoiNoError(x) },
-		)
-
-		for _, p := range formationPoints[1:] {
-			next := util.Map(
-				strings.Split(p, ","),
-				func(x string) int { return util.AtoiNoError(x) },
-			)
+		for _, nextMatches := range formationPoints[1:] {
+			next := []int{
+				util.AtoiNoError(nextMatches[1]),
+				util.AtoiNoError(nextMatches[2]),
+			}
 
 			for x := util.Min(prev[0], next[0]); x <= util.Max(prev[0], next[0]); x++ {
 				for y := util.Min(prev[1], next[1]); y <= util.Max(prev[1], next[1]); y++ {
@@ -116,8 +100,6 @@ func getPartOneData() CaveMap {
 			prev = next
 		}
 	}
-
-	cavemap.Set(500, 0, SandSource)
 
 	return cavemap
 }
@@ -143,12 +125,10 @@ func PrintCaveMap(cavemap CaveMap) {
 
 func SimulateSand(cavemap CaveMap, withfloor bool) int {
 	numsand := 0
-	sandX, sandY := 500, 0
 
 	for true {
-		sandX, sandY = 500, 0
+		sandX, sandY := 500, 0
 		if cavemap.Get(sandX, sandY) != SandSource {
-			// PrintCaveMap(cavemap)
 			return numsand // Source is blocked
 		}
 
@@ -156,7 +136,6 @@ func SimulateSand(cavemap CaveMap, withfloor bool) int {
 			sandY++
 			if sandY >= cavemap.Depth() {
 				if !withfloor {
-					// PrintCaveMap(cavemap)
 					return numsand // Into the abyss
 				} else {
 					cavemap.Set(sandX, sandY-1, Sand)
@@ -191,14 +170,15 @@ func SimulateSand(cavemap CaveMap, withfloor bool) int {
 func PartOne() any {
 	cavemap := getPartOneData()
 	numsand := SimulateSand(cavemap, false)
+	// PrintCaveMap(cavemap)
 	return numsand
 }
 
 func PartTwo() any {
 	cavemap := getPartOneData()
-	// Add 1 extra space at the bottom for the floor
-	cavemap.Features = append(cavemap.Features, make([]MapFeature, len(cavemap.Features[0])))
+	cavemap.Set(500, cavemap.Depth(), Air) // Add 1 layer of air before the bottom
 	numsand := SimulateSand(cavemap, true)
+	// PrintCaveMap(cavemap)
 	return numsand
 }
 
