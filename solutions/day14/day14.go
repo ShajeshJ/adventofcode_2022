@@ -48,7 +48,7 @@ func (c *CaveMap) Set(x int, y int, val MapFeature) {
 	}
 
 	// Increase X to the right to always keep 1 column as buffer
-	for x-c.Xoffset >= len(c.Features[0])-1 {
+	for x-c.Xoffset+1 >= len(c.Features[0]) {
 		for eachY := 0; eachY < len(c.Features); eachY++ {
 			c.Features[eachY] = append(c.Features[eachY], Air)
 		}
