@@ -86,22 +86,20 @@ func PartOne() any {
 
 func CanHaveDistressBeacon(x, y int, sensors []Sensor) bool {
 	for _, s := range sensors {
-		if (s.Point[0] == x && s.Point[1] == y) ||
-			(s.Beacon[0] == x && s.Beacon[1] == y) ||
-			ManhattanDist(s.Point, []int{x, y}) <= s.NoBeaconRange {
+		if ManhattanDist(s.Point, []int{x, y}) <= s.NoBeaconRange {
 			return false
 		}
 	}
 	return true
 }
 
+// answer was 13673971349056 at x=3418400-3418800
 func PartTwo() any {
 	sensors := getPartOneData()
 	maxCoords := 4_000_000
 
 	distressX, distressY := -1, -1
 	var wg sync.WaitGroup
-	// pick up from x=1461600
 	for x := 0; x <= maxCoords; x++ {
 		x := x
 		wg.Add(1)

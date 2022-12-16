@@ -128,7 +128,6 @@ func (sm *SensorMap) TrySet(x, miny, maxy int) {
 		if cr.Max+1 < r.Min {
 			// looped range is at least 1 space after the candidate;
 			// `cr` is complete, and we can add unappended remainder
-			newCovered = append(newCovered, cr)
 			breakIndex = i
 			break
 		}
@@ -138,10 +137,8 @@ func (sm *SensorMap) TrySet(x, miny, maxy int) {
 		cr.Max = util.Max(r.Max, cr.Max)
 	}
 
-	if breakIndex == -1 {
-		// Never broke the above loop; only `cr` to be appended
-		newCovered = append(newCovered, cr)
-	} else {
+	newCovered = append(newCovered, cr)
+	if breakIndex != -1 {
 		newCovered = append(newCovered, sm.Covered[breakIndex:]...)
 	}
 
@@ -155,9 +152,6 @@ func PartTwo() any {
 	var distressX int
 	for t, s := range sensors {
 		distressX = t
-		sensorMap.TrySet(s.Point[0], s.Point[1], s.Point[1])
-		sensorMap.TrySet(s.Beacon[0], s.Beacon[1], s.Point[1])
-
 		beaconlessRange := ManhattanDist(s.Point, s.Beacon)
 		for xOffset := 0 - beaconlessRange; xOffset <= beaconlessRange; xOffset++ {
 			sensorMap.TrySet(
