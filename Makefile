@@ -5,4 +5,4 @@ new_day:
 
 run:
 	@read -p "Enter which day to run: " day; \
-	go run solutions/day$$day/day$$day.go
+	go run solutions/day$$day/*.go
