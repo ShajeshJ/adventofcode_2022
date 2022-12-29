@@ -3,10 +3,10 @@ package main
 import (
 	"embed"
 	"fmt"
-	"math"
 
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
+	"golang.org/x/exp/slices"
 )
 
 var log = logging.GetLogger()
@@ -16,20 +16,16 @@ var files embed.FS
 
 type SNAFUDIGIT rune
 
-var DIGITVAL = map[SNAFUDIGIT]int{
-	'=': -2,
-	'-': -1,
-	'0': 0,
-	'1': 1,
-	'2': 2,
-}
+var DIGITS = []SNAFUDIGIT{'=', '-', '0', '1', '2'}
+
+const OFFSET = 2 // The negative offset of a digit's actual value to its index in DIGITS
 
 type Snafu []SNAFUDIGIT
 
 func (s *Snafu) Int() int {
 	val := 0
 	for i, r := range *s {
-		val += int(math.Pow(5, float64(i))) * DIGITVAL[r]
+		val += util.Pow(5, i) * (slices.Index(DIGITS, r) - OFFSET)
 	}
 	return val
 }
@@ -42,27 +38,24 @@ func (s *Snafu) String() string {
 	return str
 }
 
+func GetNextDigit(n int) (SNAFUDIGIT, int) {
+	rem := n % 5
+	carry := 0
+
+	if rem > 2 {
+		rem = rem - 5
+		carry = 1
+	}
+
+	return DIGITS[rem+OFFSET], carry
+}
+
 func ConvertToSnafu(n int) Snafu {
 	snafu := make(Snafu, 0)
-	carry := 0
 	for n > 0 {
-		rem := n % 5
-		if rem > 2 {
-			rem = rem - 5
-			carry = 1
-		} else {
-			carry = 0
-		}
-
-		for k, v := range DIGITVAL {
-			if v == rem {
-				snafu = append(snafu, k)
-			}
-		}
+		digit, carry := GetNextDigit(n)
+		snafu = append(snafu, digit)
 		n = n/5 + carry
-	}
-	if carry == 1 {
-		snafu = append(snafu, SNAFUDIGIT('1'))
 	}
 	return snafu
 }
