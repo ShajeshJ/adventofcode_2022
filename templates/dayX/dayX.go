@@ -9,7 +9,7 @@ import (
 
 var log = logging.GetLogger()
 
-//go:embed part1.txt
+//go:embed input.txt
 var files embed.FS
 
 func PartOne() any {

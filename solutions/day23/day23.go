@@ -120,7 +120,7 @@ func getPartOneData() ElfMap {
 	return elves
 }
 
-//go:embed part1.txt
+//go:embed input.txt
 var files embed.FS
 
 func getProposals(elves ElfMap, curDir Direction) map[Point][]Elf {

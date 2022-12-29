@@ -13,7 +13,7 @@ import (
 
 var log = logging.GetLogger()
 
-//go:embed part1.txt
+//go:embed input.txt
 var files embed.FS
 
 var stepRegex = regexp.MustCompile(`move (\d+) from (\d+) to (\d+)`)
