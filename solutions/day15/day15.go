@@ -4,7 +4,6 @@ import (
 	"embed"
 	"fmt"
 	"regexp"
-	"sync"
 
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
@@ -84,39 +83,31 @@ func PartOne() any {
 	return noBeaconCount
 }
 
-func CanHaveDistressBeacon(x, y int, sensors []Sensor) bool {
+// InSensorRange returns true if the point is in range of a sensor, and returns the next
+// y-coordinate that's outside of that sensor's range; otherwise returns false and `y`
+func InSensorRange(x, y int, sensors []Sensor) (bool, int) {
 	for _, s := range sensors {
 		if ManhattanDist(s.Point, []int{x, y}) <= s.NoBeaconRange {
-			return false
+			// nextY = {no-beacon range around the sensor} - (x dist from sensor) + 1
+			return true, s.Point[1] + (s.NoBeaconRange - util.Abs(s.Point[0]-x)) + 1
 		}
 	}
-	return true
+	return false, y
 }
 
-// answer was 13673971349056 at x=3418400-3418800
 func PartTwo() any {
 	sensors := getPartOneData()
 	maxCoords := 4_000_000
 
 	distressX, distressY := -1, -1
-	var wg sync.WaitGroup
 	for x := 0; x <= maxCoords; x++ {
-		x := x
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for y := 0; y <= maxCoords; y++ {
-				if CanHaveDistressBeacon(x, y, sensors) {
-					distressX, distressY = x, y
-					log.Infof("Early exit value: %v", distressX*4_000_000+distressY)
-					break
-				}
+		y := 0
+		for y <= maxCoords {
+			var inRange bool
+			if inRange, y = InSensorRange(x, y, sensors); !inRange {
+				distressX, distressY = x, y
+				break
 			}
-		}()
-
-		if x%400 == 0 {
-			log.Infof("waiting for batch x=%v", x)
-			wg.Wait()
 		}
 
 		if distressX != -1 {
