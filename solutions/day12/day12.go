@@ -70,9 +70,17 @@ func ManhattanDist(start Square, dest Square) int {
 		util.Abs(start.Coords.Col()-dest.Coords.Col()))
 }
 
-func FindShortestPath(hmap map[Coordinates]Square, start Square, end Square) (TraversedSquare, bool) {
-	openList, closedList := map[Coordinates]TraversedSquare{}, map[Coordinates]TraversedSquare{}
-	openList[start.Coords] = TraversedSquare{Square: start, F: 0, G: 0, H: 0}
+// FindShortestPath finds the shortest path from start to end using A* algorithm
+func FindShortestPath(
+	hmap map[Coordinates]Square,
+	start Square,
+	calcHeuristic func(s, q TraversedSquare) int,
+	isValidSuccessor func(s, q TraversedSquare) bool,
+	isEnd func(s TraversedSquare) bool,
+) (TraversedSquare, bool) {
+
+	openList := map[Coordinates]TraversedSquare{start.Coords: {Square: start}}
+	closedList := map[Coordinates]TraversedSquare{}
 
 	var found TraversedSquare
 
@@ -101,16 +109,16 @@ func FindShortestPath(hmap map[Coordinates]Square, start Square, end Square) (Tr
 				continue // Invalid coord
 			}
 
-			if s.Elevation > q.Elevation+1 {
-				continue // Too high to reach
-			}
-
 			successor := TraversedSquare{Square: s}
 			successor.G = q.G + 1
-			successor.H = ManhattanDist(successor.Square, end) + (s.Elevation - q.Elevation)
+			successor.H = calcHeuristic(successor, q)
 			successor.F = successor.G + successor.H
 
-			if successor.IsEnd {
+			if !isValidSuccessor(successor, q) {
+				continue // successor is unreachable for whatever reason
+			}
+
+			if isEnd(successor) {
 				found = successor
 				break
 			}
@@ -139,7 +147,14 @@ func FindShortestPath(hmap map[Coordinates]Square, start Square, end Square) (Tr
 
 func PartOne() any {
 	hmap, start, end := getPartOneData()
-	foundPath, found := FindShortestPath(hmap, start, end)
+	foundPath, found := FindShortestPath(
+		hmap,
+		start,
+		// Prioritize paths closer to the end tile, both on the 2D plane and in elevation
+		func(s, q TraversedSquare) int { return ManhattanDist(s.Square, end) + (q.Elevation - s.Elevation) },
+		func(s, q TraversedSquare) bool { return s.Elevation <= q.Elevation+1 },
+		func(s TraversedSquare) bool { return s.IsEnd },
+	)
 	if !found {
 		panic("no path found from start to end")
 	}
@@ -147,23 +162,21 @@ func PartOne() any {
 }
 
 func PartTwo() any {
-	hmap, start, end := getPartOneData()
-	minFromLowest, found := FindShortestPath(hmap, start, end)
+	hmap, _, end := getPartOneData()
+	// To find the shortest path starting from any 0-elevation square, we instead
+	// find the shorest path starting from the end tile and aim towards any arbitrary 0-elevation tile
+	foundPath, found := FindShortestPath(
+		hmap,
+		end,
+		// We only care about elevation now, since we're targetting any arbitrary 0-elevation tile
+		func(s, q TraversedSquare) int { return s.Elevation },
+		func(s, q TraversedSquare) bool { return s.Elevation >= q.Elevation-1 },
+		func(s TraversedSquare) bool { return s.Elevation == 0 },
+	)
 	if !found {
-		panic("start should have a path to the end")
+		panic("no path found from start to end")
 	}
-
-	for _, testSquare := range hmap {
-		if testSquare.Elevation > 0 {
-			continue
-		}
-
-		if result, found := FindShortestPath(hmap, testSquare, end); found && result.G < minFromLowest.G {
-			minFromLowest = result
-		}
-	}
-
-	return minFromLowest.G
+	return foundPath.G
 }
 
 func main() {
