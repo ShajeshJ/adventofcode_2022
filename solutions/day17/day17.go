@@ -17,7 +17,7 @@ var files embed.FS
 type Direction int
 
 const (
-	Down = iota
+	Down Direction = iota
 	Left
 	Right
 )
@@ -97,7 +97,7 @@ type RockWindIndexes struct {
 // RunRockSimulation will run the run simulation from the `start` indexes,
 // and will attempt to drop `numRocks` until the `end` indexes. If the `end` indexes
 // are -1, then the simulation will go until all `numRocks` are thrown.
-// The rock formation height and number of rocks thrown will be returned
+// The added height and number of rocks thrown will be returned
 func RunRockSimulation(start, end RockWindIndexes, numRocks int, chamber *[][]rune) (int, int) {
 	input := util.ReadProblemInput(files, 1)[0]
 	getWind := GetWindGenerator(input)
@@ -131,7 +131,7 @@ func RunRockSimulation(start, end RockWindIndexes, numRocks int, chamber *[][]ru
 
 		if end.Rock == rockLoopIdx && end.Wind == windLoopIdx {
 			// PrintChamber(chamber)
-			return GetHeight(*chamber) - startHeight, numRocks - (numRocks - i)
+			return GetHeight(*chamber) - startHeight, i
 		}
 	}
 
@@ -233,11 +233,6 @@ func PartTwo() any {
 
 	totalHeight += endSimHeight
 	totalRocks -= endSimThrown
-
-	if totalRocks != 0 {
-		log.Info(totalRocks)
-		panic("something went wrong")
-	}
 
 	return totalHeight
 }
