@@ -7,21 +7,13 @@ import (
 
 	"github.com/ShajeshJ/adventofcode_2022/common/logging"
 	"github.com/ShajeshJ/adventofcode_2022/common/util"
+	"golang.org/x/exp/slices"
 )
 
 var log = logging.GetLogger()
 
 //go:embed input.txt
 var files embed.FS
-
-type State int
-
-const (
-	Unknown = iota
-	HasBeacon
-	HasSensor
-	NoBeacon
-)
 
 type Sensor struct {
 	Point         []int
@@ -51,34 +43,58 @@ func getPartOneData() []Sensor {
 	return sensors
 }
 
+type Range struct {
+	Min int
+	Max int
+}
+
+func CombineOrderedRanges(r Range, ranges []Range) []Range {
+	combined := []Range{}
+
+	breakIndex := -1
+	for i, r2 := range ranges {
+		if r2.Max+1 < r.Min {
+			combined = append(combined, r2)
+			continue
+		}
+		if r.Max+1 < r2.Min {
+			breakIndex = i
+			break
+		}
+		r.Min = util.Min(r.Min, r2.Min)
+		r.Max = util.Max(r.Max, r2.Max)
+	}
+	combined = append(combined, r)
+	if breakIndex != -1 {
+		combined = append(combined, ranges[breakIndex:]...)
+	}
+	return combined
+}
+
 func PartOne() any {
 	sensors := getPartOneData()
 	targetY := 2_000_000
-	atTargetY := map[int]State{}
+	atTargetY := []Range{}
+	beaconsAtTargetY := []int{}
 
+	noBeaconCount := 0
 	for _, s := range sensors {
-		if s.Point[1] == targetY {
-			atTargetY[s.Point[0]] = HasSensor
-		}
-		if s.Beacon[1] == targetY {
-			atTargetY[s.Beacon[0]] = HasBeacon
+		if s.Beacon[1] == targetY && !slices.Contains(beaconsAtTargetY, s.Beacon[0]) {
+			noBeaconCount--
+			beaconsAtTargetY = append(beaconsAtTargetY, s.Beacon[0])
 		}
 
 		// sub the Y distance, and focus only on X
 		beaconlessRange := s.NoBeaconRange - util.Abs(s.Point[1]-targetY)
-
-		for x := s.Point[0] - beaconlessRange; x <= s.Point[0]+beaconlessRange; x++ {
-			if atTargetY[x] == Unknown {
-				atTargetY[x] = NoBeacon
-			}
+		if beaconlessRange < 0 {
+			continue
 		}
+
+		atTargetY = CombineOrderedRanges(Range{s.Point[0] - beaconlessRange, s.Point[0] + beaconlessRange}, atTargetY)
 	}
 
-	noBeaconCount := 0
-	for _, s := range atTargetY {
-		if s == NoBeacon || s == HasSensor {
-			noBeaconCount++
-		}
+	for _, r := range atTargetY {
+		noBeaconCount += r.Max - r.Min + 1
 	}
 	return noBeaconCount
 }
