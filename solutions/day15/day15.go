@@ -30,7 +30,7 @@ func getPartOneData() []Sensor {
 	yregex := regexp.MustCompile(`y=(-?\d+)`)
 
 	var sensors []Sensor
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		xpoints := xregex.FindAllStringSubmatch(line, 2)
 		ypoints := yregex.FindAllStringSubmatch(line, 2)
 		s := Sensor{

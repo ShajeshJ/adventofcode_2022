@@ -14,7 +14,7 @@ var log = logging.GetLogger()
 var files embed.FS
 
 func getPartOneInput() (data [][]int) {
-	for i, line := range util.ReadProblemInput(files, 1) {
+	for i, line := range util.ReadProblemInput(files) {
 		data = append(data, []int{})
 		for _, r := range line {
 			data[i] = append(data[i], util.AtoiNoError(string(r)))

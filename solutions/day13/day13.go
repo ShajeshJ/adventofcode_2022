@@ -63,7 +63,7 @@ func getPartOneData() [][2]Packet {
 	var curPair [2]Packet
 	fillIndex := 0
 
-	inputLines := util.ReadProblemInput(files, 1)
+	inputLines := util.ReadProblemInput(files)
 	if inputLines[len(inputLines)-1] != "" {
 		// Simplify for-loop parsing
 		inputLines = append(inputLines, "")
@@ -154,7 +154,7 @@ func PartOne() any {
 func getPartTwoData() []Packet {
 	var receivedPairs []Packet
 
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		if line == "" {
 			continue
 		}

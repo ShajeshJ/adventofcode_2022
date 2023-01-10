@@ -118,7 +118,7 @@ func buildInstructions(instructionStr string) []Instruction {
 }
 
 func getPartOneData() ([][]*Tile, []Instruction) {
-	data := util.ReadProblemInput(files, 1)
+	data := util.ReadProblemInput(files)
 	instructions := buildInstructions(data[len(data)-1])
 	data = data[:len(data)-2] // Remove non-map data
 

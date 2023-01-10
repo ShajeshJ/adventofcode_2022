@@ -71,7 +71,7 @@ func getPartOneData() []Monkey {
 	monkeys := []Monkey{}
 	var curMonkey Monkey
 
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		tokens := strings.Split(strings.TrimSpace(line), " ")
 
 		if tokens[0] == "Monkey" {

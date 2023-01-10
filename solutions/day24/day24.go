@@ -79,7 +79,7 @@ func (ss *SimState) GetValidMoves(p Position) []Position {
 }
 
 func getPartOneData() SimState {
-	data := util.ReadProblemInput(files, 1)
+	data := util.ReadProblemInput(files)
 	h, w := len(data)-2, len(data[0])-2
 	blizzards := make([]Blizzard, 0)
 	start, end := Position{}, Position{}
@@ -163,15 +163,15 @@ func PartOne() any {
 func PartTwo() any {
 	simState := getPartOneData()
 	leg1 := FindMinTravelTime(&simState) // Start -> End
-	log.Info("minutes to travel from start to end: ", leg1)
+	// log.Info("minutes to travel from start to end: ", leg1)
 
 	simState.StartPos, simState.EndPos = simState.EndPos, simState.StartPos
 	leg2 := FindMinTravelTime(&simState) // End -> Start
-	log.Info("minutes to travel from end back to the start: ", leg2)
+	// log.Info("minutes to travel from end back to the start: ", leg2)
 
 	simState.StartPos, simState.EndPos = simState.EndPos, simState.StartPos
 	leg3 := FindMinTravelTime(&simState) // Start -> End
-	log.Info("minutes to travel from start back to the end: ", leg3)
+	// log.Info("minutes to travel from start back to the end: ", leg3)
 
 	return leg1 + leg2 + leg3
 }

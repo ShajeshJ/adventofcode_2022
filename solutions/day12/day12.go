@@ -40,7 +40,7 @@ func getPartOneData() (map[Coordinates]Square, Square, Square) {
 
 	var start, end Square
 
-	for row, line := range util.ReadProblemInput(files, 1) {
+	for row, line := range util.ReadProblemInput(files) {
 		for col, r := range line {
 			p := Square{Coords: Coordinates{row, col}}
 

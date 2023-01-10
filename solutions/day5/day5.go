@@ -37,7 +37,7 @@ func (s *Step) GetToIndex() int {
 }
 
 func getPartOneInput() ([]ds.Stack[rune], []Step) {
-	lines := util.ReadProblemInput(files, 1)
+	lines := util.ReadProblemInput(files)
 	sepIndex := slices.Index(lines, "")
 
 	stacks := make([]ds.Stack[rune], 9)

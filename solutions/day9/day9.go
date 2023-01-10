@@ -50,7 +50,7 @@ func SimulateRope(numKnots int) int {
 	knots := make([]Position, numKnots)
 	visited := map[Position]int{knots[numKnots-1]: 1}
 
-	for _, m := range util.ReadProblemInput(files, 1) {
+	for _, m := range util.ReadProblemInput(files) {
 		headMoves := strings.Split(m, " ")
 		dir, amt := headMoves[0], util.AtoiNoError(headMoves[1])
 

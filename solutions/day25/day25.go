@@ -62,7 +62,7 @@ func ConvertToSnafu(n int) Snafu {
 
 func getPartOneData() []Snafu {
 	snafus := make([]Snafu, 0)
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		snafu := make(Snafu, 0)
 		for j := len(line) - 1; j >= 0; j-- {
 			snafu = append(snafu, SNAFUDIGIT(line[j]))

@@ -31,7 +31,7 @@ func (e *Elf) Intersects(other Elf) bool {
 var inputRegex = regexp.MustCompile(`(\d+)-(\d+),(\d+)-(\d+)`)
 
 func getPartOneData() (elfPairs [][]Elf) {
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		var p []int
 		for _, m := range inputRegex.FindStringSubmatch(line)[1:] {
 			p = append(p, util.AtoiNoError(m))

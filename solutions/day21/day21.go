@@ -41,7 +41,7 @@ func getPartOneData() map[string]*Monkey {
 	}
 
 	monkeys := make(map[string]*Monkey)
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		tokens := strings.Split(line, " ")
 		name := strings.TrimRight(tokens[0], ":")
 		if len(tokens) == 2 {

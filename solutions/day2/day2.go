@@ -34,7 +34,7 @@ var p1Scores = map[string]int{
 }
 
 func PartOne() any {
-	allRounds := util.ReadProblemInput(files, 1)
+	allRounds := util.ReadProblemInput(files)
 	return lookupAndSum(&p1Scores, &allRounds)
 }
 
@@ -51,7 +51,7 @@ var p2Scores = map[string]int{
 }
 
 func PartTwo() any {
-	allRounds := util.ReadProblemInput(files, 1)
+	allRounds := util.ReadProblemInput(files)
 	return lookupAndSum(&p2Scores, &allRounds)
 }
 

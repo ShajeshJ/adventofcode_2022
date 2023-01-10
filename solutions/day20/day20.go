@@ -22,7 +22,7 @@ type Node struct {
 
 func getPartOneData() []*Node {
 	var nodes = make([]*Node, 0)
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		nodes = append(nodes, &Node{Value: util.AtoiNoError(line)})
 	}
 

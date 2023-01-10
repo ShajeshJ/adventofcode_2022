@@ -28,7 +28,7 @@ func RunCRT(doCycleProcessing func(cycle, x int)) {
 	cycle := 0
 	delay := 0
 	curInstruction := ""
-	instructions := ds.Stack[string](util.ReadProblemInput(files, 1))
+	instructions := ds.Stack[string](util.ReadProblemInput(files))
 
 	for len(instructions) != 0 {
 		cycle++

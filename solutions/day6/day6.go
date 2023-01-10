@@ -24,7 +24,7 @@ func hasDuplicateRunes(s string) bool {
 }
 
 func PartOne(n int) any {
-	seq := util.ReadProblemInput(files, 1)[0]
+	seq := util.ReadProblemInput(files)[0]
 
 	// Must be a minimum of n characters long
 	buffer := seq[:n]

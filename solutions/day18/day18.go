@@ -21,7 +21,7 @@ type Voxel struct {
 
 func getPartOneData() []Voxel {
 	var voxels []Voxel
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		coords := util.Map(
 			strings.Split(line, ","),
 			func(x string) int { return util.AtoiNoError(x) },

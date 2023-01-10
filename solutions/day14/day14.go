@@ -78,7 +78,7 @@ func getPartOneData() CaveMap {
 	cavemap := NewCaveMap(500, 0, SandSource)
 	pointRegex := regexp.MustCompile(`(\d+),(\d+)`)
 
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		formationPoints := pointRegex.FindAllStringSubmatch(line, -1)
 		prev := []int{
 			util.AtoiNoError(formationPoints[0][1]),

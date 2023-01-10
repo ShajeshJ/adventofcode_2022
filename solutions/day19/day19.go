@@ -93,7 +93,7 @@ func getPartOneData() []Blueprint {
 	// Each geode robot costs {5} ore and {6} obsidian.
 	regex := regexp.MustCompile(`\d+`)
 	blueprints := []Blueprint{}
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		vals := regex.FindAllStringSubmatch(line, -1)
 		bp := Blueprint{util.AtoiNoError(vals[0][0]), make(map[ResourceType]Items)}
 		bp.Costs[Ore] = Items{Ore: util.AtoiNoError(vals[1][0])}

@@ -99,7 +99,7 @@ type RockWindIndexes struct {
 // are -1, then the simulation will go until all `numRocks` are thrown.
 // The added height and number of rocks thrown will be returned
 func RunRockSimulation(start, end RockWindIndexes, numRocks int, chamber *[][]rune) (int, int) {
-	input := util.ReadProblemInput(files, 1)[0]
+	input := util.ReadProblemInput(files)[0]
 	getWind := GetWindGenerator(input)
 	getRock := GetRockGenerator()
 
@@ -152,7 +152,7 @@ func PartOne() any {
 // GetRepeatingIndexes simulates the rock fall from part 1, until
 // it finds a repeating index pattern
 func GetRepeatingIndexes() (rockIdx, windIdx int) {
-	input := util.ReadProblemInput(files, 1)[0]
+	input := util.ReadProblemInput(files)[0]
 	getWind := GetWindGenerator(input)
 	getRock := GetRockGenerator()
 	chamber := *CreateChamber()

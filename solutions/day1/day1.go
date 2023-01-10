@@ -27,7 +27,7 @@ func PartOne() any {
 	mostCalories := ds.NewTopList[int](1)
 	curElfCalories := 0
 
-	for _, food := range util.ReadProblemInput(files, 1) {
+	for _, food := range util.ReadProblemInput(files) {
 		if food == "" {
 			mostCalories.TryPush(curElfCalories)
 			curElfCalories = 0
@@ -43,7 +43,7 @@ func PartTwo() any {
 	mostCalories := ds.NewTopList[int](3)
 	curElfCalories := 0
 
-	for _, food := range util.ReadProblemInput(files, 1) {
+	for _, food := range util.ReadProblemInput(files) {
 		if food == "" {
 			mostCalories.TryPush(curElfCalories)
 			curElfCalories = 0

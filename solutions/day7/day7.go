@@ -78,7 +78,7 @@ func (c *Computer) ReadlsOutput(tokens ...string) {
 func BuildComputer(folderExitCallback func(cwd *Dir)) Computer {
 	c := NewComputer(folderExitCallback)
 
-	for _, line := range util.ReadProblemInput(files, 1) {
+	for _, line := range util.ReadProblemInput(files) {
 		tokens := strings.Split(line, " ")
 
 		if tokens[0] == "$" {

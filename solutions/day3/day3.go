@@ -14,7 +14,7 @@ var log = logging.GetLogger()
 var files embed.FS
 
 func getPartTwoData() (data [][]string) {
-	rucksacks := util.ReadProblemInput(files, 1)
+	rucksacks := util.ReadProblemInput(files)
 
 	for i := 0; i < len(rucksacks); i += 3 {
 		data = append(data, []string{rucksacks[i], rucksacks[i+1], rucksacks[i+2]})
@@ -50,7 +50,7 @@ func getPriority(r rune) int {
 }
 
 func PartOne() any {
-	rucksacks := util.ReadProblemInput(files, 1)
+	rucksacks := util.ReadProblemInput(files)
 
 	total := 0
 

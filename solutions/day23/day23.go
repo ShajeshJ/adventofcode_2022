@@ -109,7 +109,7 @@ func GetPoint(d Direction, p Point) Point {
 
 func getPartOneData() ElfMap {
 	elves := make(ElfMap)
-	for i, line := range util.ReadProblemInput(files, 1) {
+	for i, line := range util.ReadProblemInput(files) {
 		for j, c := range line {
 			if c == '#' {
 				p := Point{j, i}
